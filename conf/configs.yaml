@@ -1,0 +1,18 @@
+httpAddr:
+    host: 0.0.0.0
+    port: 9090
+
+mysqlconf:
+  host: localhost
+  port: 3306
+  user: root
+  password: mysql_112525
+  dbname: tiktok
+
+log:
+  debug: true
+  level: info
+  savePath: ../log/log.log
+  maxAge: 30
+  rotationTime: 24
+  timeFormat: 2006-01-02 15:04:05
