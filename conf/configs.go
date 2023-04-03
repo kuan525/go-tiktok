@@ -16,7 +16,7 @@ var (
 
 type Address struct {
 	Host string `yaml:"host"` // 开放地址
-	Port int    `yaml:"port"` // 开放端口
+	Port string `yaml:"port"` // 开放端口
 }
 
 type MysqlConf struct {
