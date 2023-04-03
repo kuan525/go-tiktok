@@ -8,5 +8,5 @@ import (
 // InitRouters 初始化路由
 func InitRouters(app *iris.Application) {
 	appRouter := app.Party("/douyin")
-	v1.RegisterConfigRouter(appRouter)
+	v1.RegisterConfigRouter(&appRouter)
 }
