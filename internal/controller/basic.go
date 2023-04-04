@@ -1,4 +1,34 @@
 package controller
 
-type ConnectConfigController struct {
+import (
+	"github.com/kataras/iris/v12"
+	"go-tiktok/internal/middle"
+	"go-tiktok/internal/service"
+)
+
+type ConnectController struct {
+}
+
+func (c ConnectController) DouyinFeed(ctx *iris.Context) {
+	middle.AipWrapper(ctx, service.DouyinFeedHandler)
+}
+
+func (c ConnectController) DouyinUserRegister(ctx *iris.Context) {
+	middle.AipWrapper(ctx, service.DouyinUserRegisterHandler)
+}
+
+func (c ConnectController) DouyinUserLogin(ctx *iris.Context) {
+	middle.AipWrapper(ctx, service.DouyinUserLoginHandler)
+}
+
+func (c ConnectController) DouyinUser(ctx *iris.Context) {
+	middle.AipWrapper(ctx, service.DouyinUserHandler)
+}
+
+func (c ConnectController) DouyinPublishAction(ctx *iris.Context) {
+	middle.AipWrapper(ctx, service.DouyinPublishActionHandler)
+}
+
+func (c ConnectController) DouyinPublishList(ctx *iris.Context) {
+	middle.AipWrapper(ctx, service.DouyinPublishListHandler)
 }

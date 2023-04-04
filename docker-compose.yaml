@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  app:
+    image: go-tiktok/7788:v1.0.0.0
+    container_name: go-tiktok-app
+    environment:
+      - MYSQL_HOST=go-tiktok-db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DATABASE=go-tiktok
+    ports:
+      - "7788:7788"
+    depends_on:
+      - go-tiktok-db
+    networks:
+      - my-network
+
+  db:
+    image: mysql:5.7
+    container_name: go-tiktok-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: go-tiktok
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/data:/var/lib/mysql
+    networks:
+      - my-network

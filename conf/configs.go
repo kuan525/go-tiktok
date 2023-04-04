@@ -2,16 +2,21 @@ package conf
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	_ "github.com/go-sql-driver/mysql"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"io"
 	"os"
+	"time"
 	"xorm.io/xorm"
+	"xorm.io/xorm/names"
 )
 
 var (
-	Cfg   *TiktokConfig
-	Mqcli *xorm.Engine
+	Cfg    *TiktokConfig
+	Mqcli  *xorm.Engine
+	Logger *logrus.Logger
 )
 
 type Address struct {
@@ -44,33 +49,88 @@ type TiktokConfig struct {
 	Log       LogConfig `yaml:"log"`       // 日志配置
 }
 
-// PaincErr painc错误处理
-func PaincErr(err error, msg string) {
-	err = fmt.Errorf("%s: %s", err.Error(), msg)
-	panic(err)
-}
-
-// LogErr 打印错误信息
-func LogErr(err error, msg string) {
-	err = fmt.Errorf("%s: %s", err.Error(), msg)
-	log.Errorf("%s: %s", err.Error(), msg)
-}
-
 // InitConfig 初始化配置文件
 func InitConfig(path string) error {
 	Cfg = new(TiktokConfig) // 初始化一个全局空间
 	file, err := os.Open(path)
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			HandlePaincErr(err, "conf:关闭Config资源失败")
+		}
+	}(file)
 	if err != nil {
-		PaincErr(err, "conf:设置配置文件错误")
+		HandlePaincErr(err, "conf:设置配置文件错误")
 	}
 	body, err := io.ReadAll(file)
 	if err != nil {
-		PaincErr(err, "conf:打开配置文件错误")
+		HandlePaincErr(err, "conf:打开配置文件错误")
 	}
 	if err := yaml.Unmarshal(body, Cfg); err != nil {
-		PaincErr(err, "conf:序列化配置文件错误")
+		HandlePaincErr(err, "conf:序列化配置文件错误")
 	}
 
 	return nil
+}
+
+// InitLogger 初始化日志
+func InitLogger(c *LogConfig) error {
+	savePath := c.SavePath
+
+	writer, _ := rotatelogs.New(
+		fmt.Sprintf("%s.%s", savePath, c.Suffix),
+		rotatelogs.WithLinkName(savePath),
+		rotatelogs.WithMaxAge(time.Duration(c.MaxAge)*time.Second),
+		rotatelogs.WithRotationTime(time.Duration(c.RotationTime)*time.Second),
+	)
+
+	level, err := logrus.ParseLevel(c.Level)
+	if err != nil {
+		HandlePaincErr(err, "conf:日志等级配置失败")
+	}
+
+	Logger = logrus.New()
+	Logger.SetLevel(level)
+
+	if c.Debug {
+		Logger.SetOutput(io.MultiWriter(os.Stdout, writer)) // 两者
+	} else {
+		Logger.SetOutput(writer)
+	}
+
+	Logger.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat: "2006-01-02 15:04:05.000000",
+	})
+
+	return nil
+}
+
+func InitMq(mq *MysqlConf) (*xorm.Engine, error) {
+	//dataSourceName := mq.User + ":" + mq.Password + "@tcp(mq.db)/" + mq.Dbname + "?charset=utf8mb4&parseTime=true"
+	dataSourceName := mq.User + ":" + mq.Password + "@tcp(" + mq.Host + ":" + mq.Port + ")/" + mq.Dbname + "?charset=utf8mb4&parseTime=true"
+	engine, err := xorm.NewEngine("mysql", dataSourceName)
+	if err != nil {
+		HandlePaincErr(err, "conf：创建mysql引擎错误")
+	}
+
+	// 如果没有这一行，可能会出现 `ID`被映射成了`i_d`，从而导致报错`i_d`列不存在
+	engine.SetMapper(names.GonicMapper{})
+
+	if err := engine.Ping(); err != nil {
+		HandlePaincErr(err, "conf：mysql连接失败")
+	}
+
+	return engine, nil
+}
+
+// HandlePaincErr painc错误处理
+func HandlePaincErr(err error, msg string) {
+	err = fmt.Errorf("%s: %s", err.Error(), msg)
+	panic(err)
+}
+
+// HandleLogsErr 打印错误信息
+func HandleLogsErr(err error, msg string) {
+	err = fmt.Errorf("%s: %s", err.Error(), msg)
+	logrus.Errorf("%s: %s", err.Error(), msg)
 }
