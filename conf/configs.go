@@ -126,6 +126,7 @@ func InitMq(mq *MysqlConf) (*xorm.Engine, error) {
 // HandlePaincErr painc错误处理
 func HandlePaincErr(err error, msg string) {
 	err = fmt.Errorf("%s: %s", err.Error(), msg)
+	logrus.Errorf("%s: %s", err.Error(), msg)
 	panic(err)
 }
 
