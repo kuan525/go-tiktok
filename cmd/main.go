@@ -10,8 +10,6 @@ import (
 
 func newApp() *iris.Application {
 	app := iris.New()
-	//application.PreSettion(app)
-
 	router.InitRouters(app)
 	return app
 }

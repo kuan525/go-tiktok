@@ -15,7 +15,6 @@ services:
       - go-tiktok-db
     networks:
       - my-network
-
   db:
     image: mysql:5.7
     container_name: go-tiktok-db

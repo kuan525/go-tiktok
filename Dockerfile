@@ -25,7 +25,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apk add tzdata
 
 WORKDIR /workspace
-
+   
 # 指定源Docker映像
 COPY --from=builder /go/go-tiktok/go-tiktok /workspace
 
