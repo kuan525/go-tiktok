@@ -9,26 +9,26 @@ import (
 type ConnectController struct {
 }
 
-func (c ConnectController) DouyinFeed(ctx *iris.Context) {
+func (c ConnectController) DouyinFeed(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinFeedHandler)
 }
 
-func (c ConnectController) DouyinUserRegister(ctx *iris.Context) {
+func (c ConnectController) DouyinUserRegister(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinUserRegisterHandler)
 }
 
-func (c ConnectController) DouyinUserLogin(ctx *iris.Context) {
+func (c ConnectController) DouyinUserLogin(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinUserLoginHandler)
 }
 
-func (c ConnectController) DouyinUser(ctx *iris.Context) {
+func (c ConnectController) DouyinUser(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinUserHandler)
 }
 
-func (c ConnectController) DouyinPublishAction(ctx *iris.Context) {
+func (c ConnectController) DouyinPublishAction(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinPublishActionHandler)
 }
 
-func (c ConnectController) DouyinPublishList(ctx *iris.Context) {
+func (c ConnectController) DouyinPublishList(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinPublishListHandler)
 }

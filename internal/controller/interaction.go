@@ -6,18 +6,18 @@ import (
 	"go-tiktok/internal/service"
 )
 
-func (c ConnectController) DouyinFavoriteAction(ctx *iris.Context) {
+func (c ConnectController) DouyinFavoriteAction(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinFavoriteActionHandler)
 }
 
-func (c ConnectController) DouyinFavoriteList(ctx *iris.Context) {
+func (c ConnectController) DouyinFavoriteList(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinFavoriteListHandler)
 }
 
-func (c ConnectController) DouyinCommentAction(ctx *iris.Context) {
+func (c ConnectController) DouyinCommentAction(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinCommentActionHandler)
 }
 
-func (c ConnectController) DouyinCommentList(ctx *iris.Context) {
+func (c ConnectController) DouyinCommentList(ctx iris.Context) {
 	middleware.AipWrapper(ctx, service.DouyinCommentListHandler)
 }
