@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/sirupsen/logrus v1.9.0
 	gopkg.in/yaml.v3 v3.0.1
 	xorm.io/xorm v1.3.2
