@@ -10,6 +10,11 @@ import (
 	"time"
 )
 
+type MyReq struct {
+	Token  string `json:"token"`
+	UserId int64  `json:"user_id"`
+}
+
 type MyRespErr struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
@@ -32,7 +37,8 @@ func Auth(ctx iris.Context) {
 		return
 	}
 
-	if _, ok := GetUserIdAndValidByToken(tokenString); !ok {
+	userId, ok := GetUserIdAndValidByToken(tokenString)
+	if !ok {
 		ctx.StatusCode(iris.StatusUnauthorized)
 		ctx.JSON(&MyRespErr{
 			StatusCode: 0,
@@ -40,32 +46,40 @@ func Auth(ctx iris.Context) {
 		})
 		return
 	}
+	ctx.Values().Set("Auth", &MyReq{
+		Token:  tokenString,
+		UserId: userId,
+	})
+	ctx.Next()
 }
 
 // GetTokenString 获取GetTokenString
 func GetTokenString(ctx iris.Context) string {
 	tokenString := ""
-
 	// 从HTTP请求头中获取JWT Token
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader != "" {
 		tokenString = authHeader[len("Bearer "):]
 	}
 
-	// 从HTTP请求体中获取JWT Token
-	if tokenString == "" && ctx.Method() != "GET" {
-		tokenString = ctx.FormValue("token")
+	var my MyReq
+	if tokenString == "" {
+		err := ctx.ReadJSON(&my)
+		if err != nil {
+			conf.HandleLogsErr(err, "body中获取token失败")
+		}
+		tokenString = my.Token
 	}
-
 	return tokenString
 }
 
 // GetUserIdAndValidByToken 解析Token，得到用户id并判断是否合法
 func GetUserIdAndValidByToken(tokenString string) (int64, bool) {
 	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || token.Method.Alg() != jwt.SigningMethodES256.Alg() {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 			err := fmt.Errorf("无效的签名算法：%v", token.Header["alg"])
 			conf.HandleLogsErr(err, "")
+			return nil, err
 		}
 		return []byte("my_secret_key"), nil
 	})
@@ -90,7 +104,7 @@ func GenerateToken(userId int64) (string, error) {
 			Subject:   "tiktok用户",
 			IssuedAt:  time.Now().Unix(),
 			NotBefore: time.Now().Unix(),
-			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
+			ExpiresAt: time.Now().Add(6 * time.Hour).Unix(),
 			Id:        uuid.NewString(),
 		},
 	})
