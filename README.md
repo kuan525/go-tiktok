@@ -1,6 +1,9 @@
 # go-tiktok
 极简版抖音项目（字节跳动青训营）
 
+# 架构图（初）
+![架构图](https://s3.bmp.ovh/imgs/2023/04/08/6a933c18484b4744.jpg)
+
 # APIs
 基础接口：
 
@@ -33,8 +36,5 @@
 | GET | /douyin/message/chat        | 当前登录用户和其他指定用户的聊天消息记录   |
 | POST | /douyin/message/action      | 登录用户对消息的相关操作，目前只支持消息发送 |
 
-
-# 架构图（初）
-![架构图](https://s3.bmp.ovh/imgs/2023/04/08/6a933c18484b4744.jpg)
 
 
