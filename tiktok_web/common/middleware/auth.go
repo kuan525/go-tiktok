@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"common/logs"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/sirupsen/logrus"
 	//"github.com/dgrijalva/jwt-go/v4"
 	"github.com/google/uuid"
 	"github.com/kataras/iris/v12"
@@ -25,32 +25,38 @@ type MyClaims struct {
 	UserId int64 `json:"user_id"`
 }
 
-// Auth 鉴权
-func Auth(ctx iris.Context) {
-	tokenString := GetTokenString(ctx)
-	if tokenString == "" {
-		ctx.StatusCode(iris.StatusUnauthorized)
-		ctx.JSON(&MyRespErr{
-			StatusCode: 0,
-			StatusMsg:  "未提供有效的Token",
-		})
-		return
-	}
+var Logger *logrus.Logger
 
-	userId, ok := GetUserIdAndValidByToken(tokenString)
-	if !ok {
-		ctx.StatusCode(iris.StatusUnauthorized)
-		ctx.JSON(&MyRespErr{
-			StatusCode: 0,
-			StatusMsg:  "Token不合法",
+// NewAuth 传递闭包，将日志指针传递进去
+func NewAuth(logger *logrus.Logger) iris.Handler {
+	// Auth 鉴权
+	return func(ctx iris.Context) {
+		Logger = logger
+		tokenString := GetTokenString(ctx)
+		if tokenString == "" {
+			ctx.StatusCode(iris.StatusUnauthorized)
+			ctx.JSON(&MyRespErr{
+				StatusCode: 0,
+				StatusMsg:  "未提供有效的Token",
+			})
+			return
+		}
+
+		userId, ok := GetUserIdAndValidByToken(tokenString)
+		if !ok {
+			ctx.StatusCode(iris.StatusUnauthorized)
+			ctx.JSON(&MyRespErr{
+				StatusCode: 0,
+				StatusMsg:  "Token不合法",
+			})
+			return
+		}
+		ctx.Values().Set("Auth", &MyReq{
+			Token:  tokenString,
+			UserId: userId,
 		})
-		return
+		ctx.Next()
 	}
-	ctx.Values().Set("Auth", &MyReq{
-		Token:  tokenString,
-		UserId: userId,
-	})
-	ctx.Next()
 }
 
 // GetTokenString 获取GetTokenString
@@ -66,7 +72,7 @@ func GetTokenString(ctx iris.Context) string {
 	if tokenString == "" {
 		err := ctx.ReadJSON(&my)
 		if err != nil {
-			logs.HandleLogsErr(err, "body中获取token失败")
+			Logger.Error(err, "body中获取token失败")
 		}
 		tokenString = my.Token
 	}
@@ -78,7 +84,7 @@ func GetUserIdAndValidByToken(tokenString string) (int64, bool) {
 	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 			err := fmt.Errorf("无效的签名算法：%v", token.Header["alg"])
-			logs.HandleLogsErr(err, "")
+			Logger.Error(err)
 			return nil, err
 		}
 		return []byte("my_secret_key"), nil

@@ -1,17 +1,17 @@
 package middleware
 
 import (
-	"common/logs"
 	"github.com/kataras/iris/v12"
+	"github.com/sirupsen/logrus"
 )
 
 type ApiHandler func(ctx iris.Context) error
 
-func AipWrapper(ctx iris.Context, handler ApiHandler) {
+func AipWrapper(ctx iris.Context, handler ApiHandler, logger *logrus.Logger) {
 	// 待添加，参数校验等
 	err := handler(ctx)
 	if err != nil {
-		logs.HandleLogsErr(err, "handler处理错误")
+		logger.Error(err, "handler处理错误")
 	}
 }
 
