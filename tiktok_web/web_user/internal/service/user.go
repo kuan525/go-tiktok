@@ -3,6 +3,7 @@ package service
 import (
 	"common/middleware"
 	"github.com/kataras/iris/v12"
+	"web_user/conf"
 )
 
 // DouyinUserRegisterHandler 用户注册接口 新用户注册时提供用户名，密码，昵称即可，用户名需要保证唯一。创建成功后返回用户 id 和权限token.
@@ -21,6 +22,7 @@ func DouyinUserRegisterHandler(ctx iris.Context) error {
 func DouyinUserLoginHandler(ctx iris.Context) error {
 	var err error
 	auth, _ := ctx.Values().Get("Auth").(*middleware.MyReq)
+	conf.Logger.Infof(auth.Token, auth.UserId)
 	err = ctx.JSON(iris.Map{
 		"Token":  auth.Token,
 		"UserId": auth.UserId,

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"common/logs"
 	"flag"
 	"fmt"
 	"github.com/kataras/iris/v12"
@@ -21,23 +20,26 @@ func main() {
 	flag.Parse()
 
 	var err error
+
 	if err = conf.InitConfig(strPath); err != nil {
-		logs.HandlePaincErr(err, "main:初始化配置文件失败")
+		conf.Logger.Infof(err.Error(), "main:初始化配置文件失败")
+		panic(err)
 	}
-
 	if err = conf.InitLogger(&conf.Cfg.Log); err != nil {
-		logs.HandlePaincErr(err, "main:初始化日志失败")
+		conf.Logger.Infof(err.Error(), "main:初始化日志失败")
+		panic(err)
 	}
-
 	if conf.Mqcli, err = conf.InitMq(&conf.Cfg.MysqlConf); err != nil {
-		logs.HandlePaincErr(err, "main:初始化数据库失败")
+		conf.Logger.Infof(err.Error(), "main:初始化数据库失败")
+		panic(err)
 	}
 
 	app := newApp()
 	addr := fmt.Sprintf("%s:%s", conf.Cfg.HttpAddr.Host, conf.Cfg.HttpAddr.Port)
-	// X-Forwarded-For 用于标识原始客户端的 IP 地址
+	// X-Forwarded-For 用于标识原始客户端的 IP 地址，代理服务器等通常会将真实ip放在这个里面
 	err = app.Run(iris.Addr(addr), iris.WithRemoteAddrHeader("X-Forwarded-For"))
 	if err != nil {
-		logs.HandlePaincErr(err, "main:iris启动失败")
+		conf.Logger.Infof(err.Error(), "main:iris启动失败")
+		panic(err)
 	}
 }
