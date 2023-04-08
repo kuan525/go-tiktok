@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"common/logs"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -56,18 +57,18 @@ func InitConfig(path string) error {
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-			HandlePaincErr(err, "conf:关闭Config资源失败")
+			logs.HandlePaincErr(err, "conf:关闭Config资源失败")
 		}
 	}(file)
 	if err != nil {
-		HandlePaincErr(err, "conf:设置配置文件错误")
+		logs.HandlePaincErr(err, "conf:设置配置文件错误")
 	}
 	body, err := io.ReadAll(file)
 	if err != nil {
-		HandlePaincErr(err, "conf:打开配置文件错误")
+		logs.HandlePaincErr(err, "conf:打开配置文件错误")
 	}
 	if err := yaml.Unmarshal(body, Cfg); err != nil {
-		HandlePaincErr(err, "conf:序列化配置文件错误")
+		logs.HandlePaincErr(err, "conf:序列化配置文件错误")
 	}
 
 	return nil
@@ -86,7 +87,7 @@ func InitLogger(c *LogConfig) error {
 
 	level, err := logrus.ParseLevel(c.Level)
 	if err != nil {
-		HandlePaincErr(err, "conf:日志等级配置失败")
+		logs.HandlePaincErr(err, "conf:日志等级配置失败")
 	}
 
 	Logger = logrus.New()
@@ -110,28 +111,15 @@ func InitMq(mq *MysqlConf) (*xorm.Engine, error) {
 	dataSourceName := mq.User + ":" + mq.Password + "@tcp(" + mq.Host + ":" + mq.Port + ")/" + mq.Dbname + "?charset=utf8mb4&parseTime=true"
 	engine, err := xorm.NewEngine("mysql", dataSourceName)
 	if err != nil {
-		HandlePaincErr(err, "conf：创建mysql引擎错误")
+		logs.HandlePaincErr(err, "conf：创建mysql引擎错误")
 	}
 
 	// 如果没有这一行，可能会出现 `ID`被映射成了`i_d`，从而导致报错`i_d`列不存在
 	engine.SetMapper(names.GonicMapper{})
 
 	if err := engine.Ping(); err != nil {
-		HandlePaincErr(err, "conf：mysql连接失败")
+		logs.HandlePaincErr(err, "conf：mysql连接失败")
 	}
 
 	return engine, nil
-}
-
-// HandlePaincErr painc错误处理
-func HandlePaincErr(err error, msg string) {
-	err = fmt.Errorf("%s: %s", err.Error(), msg)
-	logrus.Errorf("%s: %s", err.Error(), msg)
-	panic(err)
-}
-
-// HandleLogsErr 打印错误信息
-func HandleLogsErr(err error, msg string) {
-	err = fmt.Errorf("%s: %s", err.Error(), msg)
-	logrus.Errorf("%s: %s", err.Error(), msg)
 }
