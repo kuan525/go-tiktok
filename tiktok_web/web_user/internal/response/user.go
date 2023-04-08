@@ -24,7 +24,7 @@ type DouyinUserRegisterResp struct {
 type DouyinUserLoginResp struct {
 	StatusCode int32  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
-	UserId     string `json:"user_id"`     // 用户id
+	UserId     int64  `json:"user_id"`     // 用户id
 	Token      string `json:"token"`       // 用户鉴权token
 }
 
