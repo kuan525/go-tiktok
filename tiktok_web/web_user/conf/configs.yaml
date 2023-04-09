@@ -1,9 +1,9 @@
 httpAddr:
-    host: 0.0.0.0
-    port: 9090
+    host: localhost
+    port: 6001
 
 mysqlconf:
-  host: 0.0.0.0
+  host: localhost
   port: 3306
   user: root
   password: mysql_112525

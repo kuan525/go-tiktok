@@ -6,6 +6,7 @@ replace common => ../common
 
 require (
 	common v0.0.0-00010101000000-000000000000
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible

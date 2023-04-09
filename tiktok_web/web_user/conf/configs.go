@@ -144,6 +144,6 @@ func InitMq(mq *MysqlConf) (*xorm.Engine, error) {
 	if err := engine.Ping(); err != nil {
 		Logger.Infof(err.Error(), "conf：mysql连接失败")
 	}
-
+	//engine.Sync2(models.User{})
 	return engine, nil
 }
