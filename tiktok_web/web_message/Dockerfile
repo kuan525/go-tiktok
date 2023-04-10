@@ -2,11 +2,11 @@ FROM golang:1.19 as builder
 
 # Local
 # 先执行go mod vendor，否则找不到外层的依赖
-COPY . /Users/kuan525/Desktop/go-tiktok
+COPY . /Users/kuan525/Desktop/go-tiktok/tiktok_web/web_message
 
 # GOSUMDB:关闭和sum.golang.org的交互  CGO_ENABLED:禁用CGO
 # -trimpath 可以削减二进制文件的元数据路径  -ldflags "-w -s" 用于去除调试信息并缩小二进制文件的大小
-RUN cd /Users/kuan525/Desktop/go-tiktok && GOPROXY=https://goproxy.cn,direct GOSUMDB=off CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s" -o ca_misc cmd/main.go
+RUN cd /Users/kuan525/Desktop/go-tiktok/tiktok_web/web_message && GOPROXY=https://goproxy.cn,direct GOSUMDB=off CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s" -o web_message cmd/main.go
 
 FROM alpine
 
@@ -29,5 +29,5 @@ WORKDIR /workspace
 # 指定源Docker映像
 COPY --from=builder /go/go-tiktok/go-tiktok /workspace
 
-ENTRYPOINT ["./go-tiktok"]
+ENTRYPOINT ["./web_message"]
 
