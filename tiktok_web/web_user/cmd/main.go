@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/kataras/iris/v12"
+	"runtime"
 	"web_user/conf"
 	"web_user/internal/router"
+
+	"github.com/kataras/iris/v12"
 )
 
 func newApp() *iris.Application {
@@ -16,7 +18,12 @@ func newApp() *iris.Application {
 
 func main() {
 	var strPath string
-	flag.StringVar(&strPath, "conf_path", "./conf/configs.yaml", "--conf_path")
+	if runtime.GOOS == "darwin" {
+		flag.StringVar(&strPath, "conf_path", "./conf/configs.yaml", "--conf_path")
+	} else {
+		flag.StringVar(&strPath, "conf_path", "./configs.yaml", "--conf_path")
+	}
+
 	flag.Parse()
 
 	var err error

@@ -2,14 +2,15 @@ package conf
 
 import (
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
 	"io"
 	"os"
 	"runtime"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 	"xorm.io/xorm"
 	"xorm.io/xorm/names"
 )
