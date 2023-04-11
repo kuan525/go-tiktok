@@ -2,7 +2,6 @@ package service
 
 import (
 	"common/middleware"
-	"encoding/json"
 	"github.com/bwmarrin/snowflake"
 	"github.com/kataras/iris/v12"
 	"strconv"
@@ -15,12 +14,8 @@ import (
 var userDao dao.UserDao
 
 // DouyinUserRegisterHandler 用户注册接口 新用户注册时提供用户名，密码，昵称即可，用户名需要保证唯一。创建成功后返回用户 id 和权限token.
-func DouyinUserRegisterHandler(ctx iris.Context, reqBody *[]byte) {
-	var req request.DouyinUserRegisterReq
-	err := json.Unmarshal(*reqBody, &req)
-	if err != nil {
-		conf.Logger.Infof(err.Error(), "反序列化失败")
-	}
+func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
+	req := reqBody.(*request.DouyinUserRegisterReq)
 
 	if ok := userDao.UserIsExistByUsername(req.UserName); ok {
 		ctx.StatusCode(iris.StatusOK)
@@ -80,12 +75,8 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody *[]byte) {
 }
 
 // DouyinUserLoginHandler 用户登录接口 通过用户名和密码进行登录，登录成功后返回用户 id 和权限 token.
-func DouyinUserLoginHandler(ctx iris.Context, reqBody *[]byte) {
-	var req request.DouyinUserLoginReq
-	err := json.Unmarshal(*reqBody, &req)
-	if err != nil {
-		conf.Logger.Infof(err.Error(), "反序列化失败")
-	}
+func DouyinUserLoginHandler(ctx iris.Context, reqBody interface{}) {
+	req := reqBody.(*request.DouyinUserLoginReq)
 
 	if ok := userDao.UserIsExistByUsername(req.UserName); !ok {
 		ctx.StatusCode(iris.StatusBadRequest)
@@ -113,7 +104,7 @@ func DouyinUserLoginHandler(ctx iris.Context, reqBody *[]byte) {
 	}
 
 	ctx.StatusCode(iris.StatusOK)
-	err = ctx.JSON(response.DouyinUserLoginResp{
+	err := ctx.JSON(response.DouyinUserLoginResp{
 		StatusCode: 0,
 		StatusMsg:  "登陆成功",
 		Token:      token,
@@ -125,7 +116,7 @@ func DouyinUserLoginHandler(ctx iris.Context, reqBody *[]byte) {
 }
 
 // DouyinUserHandler 用户信息 获取登录用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数。
-func DouyinUserHandler(ctx iris.Context, reqBody *[]byte) {
+func DouyinUserHandler(ctx iris.Context, reqBody interface{}) {
 	userId, err := ctx.URLParamInt64("user_id")
 
 	user, ok := userDao.GetUserByUserId(userId)

@@ -44,7 +44,11 @@ func main() {
 	app := newApp()
 	addr := fmt.Sprintf("%s:%s", conf.Cfg.HttpAddr.Host, conf.Cfg.HttpAddr.Port)
 	// X-Forwarded-For 用于标识原始客户端的 IP 地址，代理服务器等通常会将真实ip放在这个里面
-	err = app.Run(iris.Addr(addr), iris.WithRemoteAddrHeader("X-Forwarded-For"))
+	err = app.Run(
+		iris.Addr(addr),
+		iris.WithRemoteAddrHeader("X-Forwarded-For"),
+		// 允许多次消费Body
+		iris.WithoutBodyConsumptionOnUnmarshal)
 	if err != nil {
 		conf.Logger.Infof(err.Error(), "main:iris启动失败")
 		panic(err)

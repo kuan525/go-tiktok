@@ -15,6 +15,10 @@ type MyReq struct {
 	UserId int64  `json:"user_id"`
 }
 
+type MyToken struct {
+	Token string `json:"token"`
+}
+
 type MyRespErr struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
@@ -42,7 +46,7 @@ func NewAuth(logger *logrus.Logger) iris.Handler {
 			return
 		}
 
-		userId, ok := GetUserIdAndValidByToken(tokenString)
+		_, ok := GetUserIdAndValidByToken(tokenString)
 		if !ok {
 			ctx.StatusCode(iris.StatusUnauthorized)
 			ctx.JSON(&MyRespErr{
@@ -51,10 +55,7 @@ func NewAuth(logger *logrus.Logger) iris.Handler {
 			})
 			return
 		}
-		ctx.Values().Set("Auth", &MyReq{
-			Token:  tokenString,
-			UserId: userId,
-		})
+
 		ctx.Next()
 	}
 }
@@ -68,13 +69,14 @@ func GetTokenString(ctx iris.Context) string {
 		tokenString = authHeader[len("Bearer "):]
 	}
 
-	var my MyReq
 	if tokenString == "" {
-		err := ctx.ReadJSON(&my)
+		var token MyToken
+		err := ctx.ReadJSON(&token)
 		if err != nil {
-			Logger.Error(err, "body中获取token失败")
+			Logger.Infof(err.Error(), "读取Body失败")
 		}
-		tokenString = my.Token
+
+		tokenString = token.Token
 	}
 	return tokenString
 }
@@ -84,7 +86,7 @@ func GetUserIdAndValidByToken(tokenString string) (int64, bool) {
 	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 			err := fmt.Errorf("无效的签名算法：%v", token.Header["alg"])
-			Logger.Error(err)
+			Logger.Infof(err.Error())
 			return nil, err
 		}
 		return []byte("my_secret_key"), nil
@@ -119,4 +121,9 @@ func GenerateToken(userId int64) (string, error) {
 	tokenString, err := token.SignedString([]byte("my_secret_key"))
 
 	return tokenString, err
+}
+
+func GetUserIdByToken(token string) int64 {
+	userId, _ := GetUserIdAndValidByToken(token)
+	return userId
 }

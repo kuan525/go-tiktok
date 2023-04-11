@@ -1,24 +1,20 @@
 package middleware
 
 import (
-	"encoding/json"
 	"github.com/kataras/iris/v12"
 	"github.com/sirupsen/logrus"
 )
 
-type ApiHandler func(ctx iris.Context, req *[]byte)
+type ApiHandler func(ctx iris.Context, reqBody interface{})
 
-func AipWrapper(ctx iris.Context, handler ApiHandler, logger *logrus.Logger) {
+func AipWrapper(ctx iris.Context, handler ApiHandler, reqBody interface{}, logger *logrus.Logger) {
 	// 可以将请求内容处理出来
-	var reqBody interface{}
-	err := ctx.ReadJSON(&reqBody)
+	err := ctx.ReadJSON(reqBody)
 	if err != nil {
-		logger.Infof(err.Error(), "body请求读取错误")
+		logger.Infof(err.Error(), "请求Body失败")
 	}
 
-	date, _ := json.Marshal(reqBody)
-
-	handler(ctx, &date)
+	handler(ctx, reqBody)
 }
 
 func Handler(f func(ctx iris.Context)) iris.Handler {

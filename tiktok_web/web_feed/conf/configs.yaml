@@ -1,15 +1,9 @@
 httpAddr:
-    host: 0.0.0.0
-    port: 9090
+  host: localhost
+  port: 6002
 
 mysqlconf:
-#  host: go-tiktok-db
-#  port: 3306
-#  user: root
-#  password: 123456
-#  dbname: go-tiktok
-#  db: go-tiktok-db
-  host: 0.0.0.0
+  host: localhost
   port: 3306
   user: root
   password: mysql_112525
@@ -18,8 +12,8 @@ mysqlconf:
 log:
   debug: true
   level: info
-  savePath: ../db/data
-#  savePath: /workspace/logs/log.log
+  savePath: ./logs/
+  suffix: log
   maxAge: 30
   rotationTime: 24
   timeFormat: 2006-01-02 15:04:05
