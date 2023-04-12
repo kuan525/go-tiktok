@@ -3,9 +3,11 @@ module common
 go 1.19
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
 	github.com/kataras/iris/v12 v12.2.0
+	github.com/sirupsen/logrus v1.9.0
 )
 
 require (
@@ -34,7 +36,6 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.23 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/tdewolff/minify/v2 v2.12.4 // indirect
 	github.com/tdewolff/parse/v2 v2.6.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

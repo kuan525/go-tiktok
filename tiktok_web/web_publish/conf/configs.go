@@ -44,11 +44,18 @@ type LogConfig struct {
 	TimeFormat   string `yaml:"timeFormat"`   // 时间格式化，默认格式化毫秒 2006-01-02 15:04:05.000000
 }
 
+type StaticConfig struct {
+	VoidePath string `yaml:"video"`
+	CoverPath string `yaml:"cover"`
+	Tool      string `yaml:"tool"`
+}
+
 // TiktokConfig 项目所有初始资料
 type TiktokConfig struct {
-	HttpAddr  Address   `yaml:"httpAddr"`  // http服务地址
-	MysqlConf MysqlConf `yaml:"mysqlconf"` // mysql配置
-	Log       LogConfig `yaml:"log"`       // 日志配置
+	HttpAddr   Address      `yaml:"httpAddr"`   // http服务地址
+	MysqlConf  MysqlConf    `yaml:"mysqlconf"`  // mysql配置
+	Log        LogConfig    `yaml:"log"`        // 日志配置
+	StaticConf StaticConfig `yaml:"staticconf"` // 资源文件配置
 }
 
 // InitConfig 初始化配置文件

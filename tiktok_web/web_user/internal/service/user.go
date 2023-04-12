@@ -2,9 +2,7 @@ package service
 
 import (
 	"common/middleware"
-	"github.com/bwmarrin/snowflake"
 	"github.com/kataras/iris/v12"
-	"strconv"
 	"web_user/conf"
 	"web_user/internal/dao"
 	"web_user/internal/request"
@@ -29,28 +27,16 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
 		return
 	}
 
-	// 将port的格式转换成int
-	port, err := strconv.Atoi(conf.Cfg.HttpAddr.Port)
-	if err != nil {
-		conf.Logger.Infof(err.Error(), "service:string转int失败")
-	}
-
-	// 将端口号作为节点编号，来作为雪花id生成的参数
-	node, err := snowflake.NewNode(int64(port) - 6000)
-	if err != nil {
-		conf.Logger.Infof(err.Error(), "service:创建雪花节点失败")
-	}
-
-	// 生成雪花id
-	UserId := node.Generate()
+	// 生成雪花id，使用端口作为当前机器参数
+	UserId := middleware.GetSnowflakeId(conf.Cfg.HttpAddr.Port)
 
 	//生成token
-	token, err := middleware.GenerateToken(UserId.Int64())
+	token, err := middleware.GenerateToken(UserId)
 	if err != nil {
 		conf.Logger.Infof(err.Error(), "service:创建token错误")
 	}
 
-	if ok := userDao.Register(req.UserName, req.Password, UserId.Int64()); !ok {
+	if ok := userDao.Register(req.UserName, req.Password, UserId); !ok {
 		ctx.StatusCode(iris.StatusInternalServerError)
 		err := ctx.JSON(response.DouyinUserRegisterResp{
 			StatusCode: 1,
@@ -66,7 +52,7 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
 	err = ctx.JSON(response.DouyinUserRegisterResp{
 		StatusCode: 0,
 		StatusMsg:  "注册成功",
-		UserId:     UserId.Int64(),
+		UserId:     UserId,
 		Token:      token,
 	})
 	if err != nil {

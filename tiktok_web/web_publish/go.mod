@@ -6,6 +6,7 @@ replace common => ../common
 
 require (
 	common v0.0.0-00010101000000-000000000000
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
@@ -26,6 +27,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/goccy/go-json v0.8.1 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect

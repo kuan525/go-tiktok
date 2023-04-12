@@ -17,3 +17,8 @@ log:
   maxAge: 30
   rotationTime: 24
   timeFormat: 2006-01-02 15:04:05
+
+staticconf:
+  video: /Users/kuan525/Desktop/go-tiktok/tiktok_web/static/videos/
+  cover: /Users/kuan525/Desktop/go-tiktok/tiktok_web/static/images/
+  tool:  /Users/kuan525/Desktop/go-tiktok/tiktok_web/common/tools/
