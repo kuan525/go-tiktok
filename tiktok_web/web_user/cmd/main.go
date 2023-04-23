@@ -1,6 +1,7 @@
 package main
 
 import (
+	"common/application"
 	"common/conf"
 	"common/initialize"
 	"common/log"
@@ -13,6 +14,9 @@ import (
 
 func newApp() *iris.Application {
 	app := iris.New()
+	// 注册处理打印访问接口信息的中间件
+	application.PreSetting(app)
+
 	router.InitRouters(app)
 	return app
 }

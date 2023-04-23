@@ -68,7 +68,12 @@ func InitLogger(c *conf.LogConfig) {
 		// 日志轮转的时间
 		rotatelogs.WithRotationTime(time.Duration(c.RotationTime)*time.Second),
 	)
-	defer writer.Close()
+	defer func(writer *rotatelogs.RotateLogs) {
+		err := writer.Close()
+		if err != nil {
+			panic("文件关闭错误")
+		}
+	}(writer)
 	if err != nil {
 		panic(fmt.Errorf(err.Error(), "日志文件创建出错"))
 	}
