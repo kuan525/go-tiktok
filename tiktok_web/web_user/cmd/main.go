@@ -2,6 +2,7 @@ package main
 
 import (
 	"common/conf"
+	"common/initialize"
 	"common/log"
 	"flag"
 	"fmt"
@@ -27,9 +28,9 @@ func main() {
 	flag.Parse()
 	var err error
 
-	conf.InitConfig(strPath)
+	initialize.InitConfig(strPath)
 	log.InitLogger(&conf.Cfg.Log)
-	conf.InitMq(&conf.Cfg.MysqlConf)
+	initialize.InitMq(&conf.Cfg.MysqlConf)
 
 	app := newApp()
 	addr := fmt.Sprintf("%s:%s", conf.Cfg.HttpAddr.Host, conf.Cfg.HttpAddr.Port)

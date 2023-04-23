@@ -1,13 +1,15 @@
-package conf
+package initialize
 
 import (
+	"common/conf"
 	"common/log"
+	_ "github.com/go-sql-driver/mysql"
 	"runtime"
 	"xorm.io/xorm"
 	"xorm.io/xorm/names"
 )
 
-func InitMq(mq *MysqlConf) {
+func InitMq(mq *conf.MysqlConf) {
 	var dataSourceName string
 	if runtime.GOOS == "darwin" && runtime.GOARCH == "arm64" { // 本机
 		dataSourceName = "root:mysql_112525@tcp(localhost:3306)/tiktok?charset=utf8mb4&parseTime=true"
@@ -26,5 +28,5 @@ func InitMq(mq *MysqlConf) {
 		log.Logger.Panicf(err.Error(), "conf：mysql连接失败")
 	}
 
-	Mqcli = engine
+	conf.Mqcli = engine
 }
