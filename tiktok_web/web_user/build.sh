@@ -20,7 +20,7 @@ build_service() {
   go mod vendor
 
   echo "begin to build ${NAME}:${TAG}..........."
-  docker build -t ${NAME}:${TAG} .
+  docker build --platform linux/amd64 -t ${NAME}:${TAG} .
 
   echo "begin to save ${1}.tar"
   docker save -o ${1}.tar ${NAME}:${TAG}
@@ -38,7 +38,8 @@ build_service() {
    docker rm web_user && \
    docker rmi ${NAME}:${TAG} && \
    docker load -i ${1}.tar && \
-   docker run --platform linux/arm64/v8 -dp ${NUMBER}:${NUMBER} --name ${1} ${NAME}:${TAG}"
+   docker run -itd -p ${NUMBER}:${NUMBER} --name ${1} ${NAME}:${TAG}"
+#   docker run -itd --platform linux/arm64/v8 -dp 6001:6001 --name web_user localhost:5000/web_user:1.0.0.0
 }
 
 build_service ${1}

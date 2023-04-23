@@ -1,9 +1,10 @@
 package dao
 
 import (
+	"common/conf"
+	"common/log"
 	"common/middleware"
 	"common/models"
-	"web_user/conf"
 	"web_user/internal/response"
 )
 
@@ -30,7 +31,7 @@ func (a *UserDao) Register(username, password string, userId int64) bool {
 func (a *UserDao) UserIsExistByUsername(userName string) bool {
 	ok, err := conf.Mqcli.Table(table.TableName()).Where("username = ?", userName).Exist()
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "dao:查询数据库错误")
+		log.Logger.Infof(err.Error(), "dao:查询数据库错误")
 	}
 	return ok
 }
@@ -40,17 +41,17 @@ func (a *UserDao) GetTokenAndUserIdByUsernameAndPassword(username, password stri
 	var user models.User
 	ok, err := conf.Mqcli.Table(table.TableName()).Where("username = ? AND password = ?", username, password).Get(&user)
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "dao:查询数据库错误\"")
+		log.Logger.Infof(err.Error(), "dao:查询数据库错误\"")
 		return "", 0, false
 	}
 	if !ok {
-		conf.Logger.Infof("dao:查询数据库错误\"")
+		log.Logger.Infof("dao:查询数据库错误\"")
 		return "", 0, false
 	}
 
 	token, err := middleware.GenerateToken(user.UserId)
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "dao:token申请失败")
+		log.Logger.Infof(err.Error(), "dao:token申请失败")
 		return "", 0, false
 	}
 
@@ -63,11 +64,11 @@ func (a *UserDao) GetUserByUserId(userId int64) (*response.User, bool) {
 	var user models.User
 	ok, err := conf.Mqcli.Table(table.TableName()).Where("user_id = ?", userId).Get(&user)
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "dao:查询数据库失败")
+		log.Logger.Infof(err.Error(), "dao:查询数据库失败")
 		return &response.User{}, false
 	}
 	if !ok {
-		conf.Logger.Infof("dao:查询数据库失败")
+		log.Logger.Infof("dao:查询数据库失败")
 		return &response.User{}, false
 	}
 	resp.Id = userId

@@ -1,9 +1,10 @@
 package service
 
 import (
+	"common/conf"
+	"common/log"
 	"common/middleware"
 	"github.com/kataras/iris/v12"
-	"web_user/conf"
 	"web_user/internal/dao"
 	"web_user/internal/request"
 	"web_user/internal/response"
@@ -22,7 +23,7 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
 			StatusMsg:  "当前用户已存在",
 		})
 		if err != nil {
-			conf.Logger.Infof(err.Error(), "service:发送resp失败")
+			log.Logger.Infof(err.Error(), "service:发送resp失败")
 		}
 		return
 	}
@@ -33,7 +34,7 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
 	//生成token
 	token, err := middleware.GenerateToken(UserId)
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "service:创建token错误")
+		log.Logger.Infof(err.Error(), "service:创建token错误")
 	}
 
 	if ok := userDao.Register(req.UserName, req.Password, UserId); !ok {
@@ -43,7 +44,7 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
 			StatusMsg:  "注册失败",
 		})
 		if err != nil {
-			conf.Logger.Infof(err.Error(), "注册失败")
+			log.Logger.Infof(err.Error(), "注册失败")
 		}
 		return
 	}
@@ -56,7 +57,7 @@ func DouyinUserRegisterHandler(ctx iris.Context, reqBody interface{}) {
 		Token:      token,
 	})
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "service:发送resp失败")
+		log.Logger.Infof(err.Error(), "service:发送resp失败")
 	}
 }
 
@@ -71,7 +72,7 @@ func DouyinUserLoginHandler(ctx iris.Context, reqBody interface{}) {
 			StatusMsg:  "用户不存在",
 		})
 		if err != nil {
-			conf.Logger.Infof(err.Error(), "service:发送resp失败")
+			log.Logger.Infof(err.Error(), "service:发送resp失败")
 		}
 		return
 	}
@@ -84,7 +85,7 @@ func DouyinUserLoginHandler(ctx iris.Context, reqBody interface{}) {
 			StatusMsg:  "密码错误",
 		})
 		if err != nil {
-			conf.Logger.Infof(err.Error(), "service:发送resp失败")
+			log.Logger.Infof(err.Error(), "service:发送resp失败")
 		}
 		return
 	}
@@ -97,7 +98,7 @@ func DouyinUserLoginHandler(ctx iris.Context, reqBody interface{}) {
 		UserId:     userId,
 	})
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "service:发送resp失败")
+		log.Logger.Infof(err.Error(), "service:发送resp失败")
 	}
 }
 
@@ -113,7 +114,7 @@ func DouyinUserHandler(ctx iris.Context, reqBody interface{}) {
 			StatusMsg:  "获取信息失败",
 		})
 		if err != nil {
-			conf.Logger.Infof(err.Error(), "service:发送resp失败")
+			log.Logger.Infof(err.Error(), "service:发送resp失败")
 		}
 		return
 	}
@@ -125,6 +126,6 @@ func DouyinUserHandler(ctx iris.Context, reqBody interface{}) {
 		User:       *user,
 	})
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "service:发送resp失败")
+		log.Logger.Infof(err.Error(), "service:发送resp失败")
 	}
 }

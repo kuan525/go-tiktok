@@ -69,10 +69,6 @@ func DouyinPublishActionHandler(ctx iris.Context, reqBody interface{}) {
 	}
 }
 
-// DouyinPublishListHandler 发布列表 登录用户的视频发布列表，直接列出用户所有投稿过的视频。
-func DouyinPublishListHandler(ctx iris.Context, reqBody interface{}) {
-}
-
 func GetAndSaveCover(fileName string) string {
 	// 截掉视频文件后缀格式
 	videoDir := conf.Cfg.StaticConf.VoidePath + fileName
@@ -83,4 +79,8 @@ func GetAndSaveCover(fileName string) string {
 		conf.Logger.Infof(err.Error(), "ffmpeg截取封面失败")
 	}
 	return coverDir
+}
+
+// DouyinPublishListHandler 发布列表 登录用户的视频发布列表，直接列出用户所有投稿过的视频。
+func DouyinPublishListHandler(ctx iris.Context, reqBody interface{}) {
 }
