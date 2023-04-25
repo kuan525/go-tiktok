@@ -1,15 +1,19 @@
 package dao
 
 import (
+	"common/conf"
+	"common/log"
 	"common/models"
-	"web_publish/conf"
 	"web_publish/internal/response"
 )
 
 type PublishDao struct {
 }
 
-var userTable models.User
+var (
+	userTable  models.User
+	videoTable models.Video
+)
 
 // GetUserByUserId 根据userId得到用户信息
 func (a *PublishDao) GetUserByUserId(userId int64) (*response.User, bool) {
@@ -17,11 +21,11 @@ func (a *PublishDao) GetUserByUserId(userId int64) (*response.User, bool) {
 	var user models.User
 	ok, err := conf.Mqcli.Table(userTable.TableName()).Where("user_id = ?", userId).Get(&user)
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "dao:查询数据库失败")
+		log.Logger.Infof(err.Error(), "dao:查询数据库失败")
 		return &response.User{}, false
 	}
 	if !ok {
-		conf.Logger.Infof("dao:查询数据库失败")
+		log.Logger.Infof("dao:查询数据库失败")
 		return &response.User{}, false
 	}
 	resp.Id = userId
@@ -39,6 +43,20 @@ func (a *PublishDao) GetUserByUserId(userId int64) (*response.User, bool) {
 	return &resp, true
 }
 
-func (a *PublishDao) Insert(video *response.Video) {
+func (a *PublishDao) Insert(video *response.Video) error {
+	_, err := conf.Mqcli.Table(videoTable.TableName()).Insert(&models.Video{
+		AuthorId:      video.Id,
+		PlayUrl:       video.PlayUrl,
+		CoverUrl:      video.CoverUrl,
+		FavoriteCount: video.FavoriteCount,
+		CommentCount:  video.CommentCount,
+		Title:         video.Title,
+	})
+	return err
+}
 
+func (a *PublishDao) GetVideoListByUserId(userId int64) ([]response.Video, error) {
+	var videoList []response.Video
+	_, err := conf.Mqcli.Table(videoTable.TableName()).Where("author_id = ?", userId).Get(&videoList)
+	return videoList, err
 }

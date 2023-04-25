@@ -9,6 +9,15 @@ import (
 	"net/http"
 )
 
+// GetIp 获取ip
+func GetIp(s string) string {
+	if s == "internal" {
+		return GetInternalIP()
+	} else {
+		return GetExternalIP()
+	}
+}
+
 // GetInternalIP 得到内网ip
 func GetInternalIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")

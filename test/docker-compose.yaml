@@ -1,0 +1,76 @@
+version: "3.7"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "5"
+
+networks:
+  caasm-net:
+    external: true
+    name: caasm-net
+
+
+services:
+  ca_leak:
+    image: localhost:5001/ca_leak:1.0.0.0
+    container_name: ca_leak
+    restart: always
+    ports:
+      - "0.0.0.0:6005:6005"
+    volumes:
+      - /home/moresec/web/ca_leak/conf:/workspace/conf
+      - /home/moresec/logs/ca_leak:/workspace/log
+    logging: *default-logging
+    networks:
+      - caasm-net
+  ca_misc:
+    image: localhost:5001/ca_misc:1.0.0.0
+    container_name: ca_misc
+    restart: always
+    ports:
+      - "0.0.0.0:6002:6002"
+    volumes:
+      - /home/moresec/data/web_res/ca_misc:/workspace/static
+      - /home/moresec/logs/ca_misc:/workspace/log
+      - /home/moresec/web/ca_misc/conf:/workspace/conf
+    logging: *default-logging
+    networks:
+      - caasm-net
+  ca_project:
+    image: localhost:5001/ca_project:1.0.0.0
+    container_name: ca_project
+    restart: always
+    ports:
+      - "0.0.0.0:6001:6001"
+    volumes:
+      - /home/moresec/web/ca_project/conf:/workspace/conf
+      - /home/moresec/logs/ca_project:/workspace/log
+    logging: *default-logging
+    networks:
+      - caasm-net
+  ca_asset:
+    image: localhost:5001/ca_asset:1.0.0.0
+    container_name: ca_asset
+    restart: always
+    ports:
+      - "0.0.0.0:6004:6004"
+    volumes:
+      - /home/moresec/web/ca_asset/conf:/workspace/conf
+      - /home/moresec/logs/ca_asset:/home/moresec/logs
+    logging: *default-logging
+    networks:
+      - caasm-net
+  ca_dataware:
+    image: localhost:5001/ca_dataware:1.0.0.0
+    container_name: ca_dataware
+    restart: always
+    ports:
+      - "0.0.0.0:6006:6006"
+    volumes:
+      - /home/moresec/web/ca_dataware/conf:/workspace/conf
+      - /home/moresec/logs/ca_dataware:/workspace/log
+    logging: *default-logging
+    networks:
+      - caasm-net

@@ -1,6 +1,6 @@
 httpAddr:
-  host: 127.0.0.1
   port: 6004
+  netEnv: internal
 
 mysqlconf:
   host: localhost
@@ -19,6 +19,6 @@ log:
   timeFormat: 2006-01-02 15:04:05
 
 staticconf:
-  video: /Users/kuan525/Desktop/go-tiktok/tiktok_web/static/videos/
-  cover: /Users/kuan525/Desktop/go-tiktok/tiktok_web/static/images/
-  tool:  /Users/kuan525/Desktop/go-tiktok/tiktok_web/common/tools/
+  video: ../../../static/videos/
+  cover: ../../../static/images/
+  tool: ../../../common/tools/
