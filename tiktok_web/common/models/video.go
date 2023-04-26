@@ -1,8 +1,9 @@
 package models
 
+// Video 返回给前端的缺少一个是否点赞
 type Video struct {
 	BaseModel     `xorm:"extends"`
-	AuthorId      int64  `xorm:"not null comment('视频作者id') index 'author_id'"`
+	UserId        int64  `xorm:"not null comment('视频作者id') index 'user_id'"`
 	PlayUrl       string `xorm:"not null comment('视频url') 'play_url'"`
 	CoverUrl      string `xorm:"not null comment('视频封面url') 'cover_url'"`
 	FavoriteCount int64  `xorm:"'default 0 comment('总点赞数') 'favorite_count"`

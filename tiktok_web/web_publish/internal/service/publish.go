@@ -2,19 +2,20 @@ package service
 
 import (
 	"common/conf"
+	"common/dao"
 	"common/ip"
 	"common/log"
 	"common/middleware"
+	"common/models"
 	"fmt"
 	"github.com/kataras/iris/v12"
 	"os/exec"
 	"strconv"
-	"web_publish/internal/dao"
 	"web_publish/internal/request"
 	"web_publish/internal/response"
 )
 
-var publishDao dao.PublishDao
+var Dao dao.Dao
 
 // DouyinPublishActionHandler 视频投稿 登录用户选择视频上传。
 func DouyinPublishActionHandler(ctx iris.Context, reqBody interface{}) {
@@ -54,13 +55,26 @@ func DouyinPublishActionHandler(ctx iris.Context, reqBody interface{}) {
 	coverName := GetAndSaveCover(fileName)
 	coverUrl := fmt.Sprintf("http://%s:%s/douyin/cover/%s", ip.GetIp(conf.Cfg.HttpAddr.NetEnv), conf.Cfg.HttpAddr.Port, coverName)
 
-	user, ok := publishDao.GetUserByUserId(userId)
+	user, ok := Dao.GetUserByUserId(userId)
 	if !ok {
 		log.Logger.Infof("访问数据库失败")
+		return
 	}
 	video := response.Video{
-		Id:            middleware.GetSnowflakeId(conf.Cfg.HttpAddr.Port),
-		Author:        *user,
+		Id: middleware.GetSnowflakeId(conf.Cfg.HttpAddr.Port),
+		Author: response.User{
+			Id:              user.UserId,
+			Name:            user.Name,
+			FollowCount:     user.FollowCount,
+			FollowerCount:   user.FollowerCount,
+			Avatar:          user.Avatar,
+			BackgroundImage: user.BackgroundImage,
+			Signature:       user.Signature,
+			WorkCount:       user.WorkCount,
+			IsFollow:        false,
+			TotalFavorited:  Dao.GetNumUserAllGetFavorite(user.UserId),
+			FavoriteCount:   Dao.GetNumFavorite(user.UserId),
+		},
 		PlayUrl:       fileUrl,
 		CoverUrl:      coverUrl,
 		FavoriteCount: 0,
@@ -69,7 +83,14 @@ func DouyinPublishActionHandler(ctx iris.Context, reqBody interface{}) {
 		Title:         title,
 	}
 
-	err = publishDao.Insert(&video)
+	err = Dao.Insert(&models.Video{
+		UserId:        video.Author.Id,
+		PlayUrl:       video.PlayUrl,
+		CoverUrl:      video.CoverUrl,
+		FavoriteCount: video.FavoriteCount,
+		CommentCount:  video.CommentCount,
+		Title:         video.Title,
+	})
 	if err != nil {
 		log.Logger.Infof(err.Error(), "插入数据库失败")
 		return
@@ -105,16 +126,49 @@ func DouyinPublishListHandler(ctx iris.Context, reqBody interface{}) {
 	req := reqBody.(*request.DouyinPublishListReq)
 	userId := req.UserId
 
-	videoList, err := publishDao.GetVideoListByUserId(userId)
+	// 点赞，评论总数为0
+	modelsVideoList, err := Dao.GetVideoListByUserId(userId)
 	if err != nil {
 		log.Logger.Infof(err.Error(), "访问数据库失败")
 		return
 	}
 
+	var respVideoList []response.Video
+	for _, modelVideo := range modelsVideoList {
+		user, ok := Dao.GetUserByUserId(userId)
+		if !ok {
+			log.Logger.Infof("访问数据库失败")
+			return
+		}
+		respVideo := response.Video{
+			Id:            modelVideo.Id,
+			PlayUrl:       modelVideo.PlayUrl,
+			CoverUrl:      modelVideo.CoverUrl,
+			FavoriteCount: modelVideo.FavoriteCount,
+			CommentCount:  modelVideo.CommentCount,
+			Title:         modelVideo.Title,
+			IsFavorite:    Dao.IsFavorite(userId, modelVideo.Id),
+			Author: response.User{
+				Id:              user.UserId,
+				Name:            user.Name,
+				FollowCount:     user.FollowCount,
+				FollowerCount:   user.FollowerCount,
+				Avatar:          user.Avatar,
+				BackgroundImage: user.BackgroundImage,
+				Signature:       user.Signature,
+				WorkCount:       user.WorkCount,
+				IsFollow:        false,
+				TotalFavorited:  Dao.GetNumUserAllGetFavorite(user.UserId),
+				FavoriteCount:   Dao.GetNumFavorite(user.UserId),
+			},
+		}
+		respVideoList = append(respVideoList, respVideo)
+	}
+
 	err = ctx.JSON(response.DouyinPublishListResp{
 		StatusCode: 0,
 		StatusMsg:  "获取成果",
-		VideoList:  videoList,
+		VideoList:  respVideoList,
 	})
 
 	if err != nil {

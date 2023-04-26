@@ -1,6 +1,6 @@
 httpAddr:
-  host: localhost
   port: 6006
+  netEnv: internal
 
 mysqlconf:
   host: localhost
