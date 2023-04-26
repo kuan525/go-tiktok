@@ -49,3 +49,8 @@ func (a *Dao) GetNumFavorite(voide int64) int64 {
 func (a *Dao) GetNumComment(voide int64) int64 {
 
 }
+
+// GetUserIdByVideoId 通过VideoId获取UserId
+func (a *Dao) GetUserIdByVideoId(videoId int64) (int64, error) {
+
+}

@@ -28,7 +28,7 @@ type DouyinCommentActionResp struct {
 }
 
 type DouyinCommentListResp struct {
-	StatusCode  int32   `json:"status_code"`
-	StatusMsg   string  `json:"status_msg"`
-	CommentList Comment `json:"comment_list"`
+	StatusCode  int32     `json:"status_code"`
+	StatusMsg   string    `json:"status_msg"`
+	CommentList []Comment `json:"comment_list"`
 }
