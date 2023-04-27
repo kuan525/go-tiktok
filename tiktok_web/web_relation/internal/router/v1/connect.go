@@ -14,8 +14,8 @@ func RegisterAuthenticationRouter(party *router.Party) {
 	(*party).Handle("GET", "/relation/follow/list/", middleware.Handler(controller.ConnectController{}.DouyinRelationFollowList))
 	// 用户粉丝列表 所有关注登录用户的粉丝列表。
 	(*party).Handle("GET", "/relation/follower/list/", middleware.Handler(controller.ConnectController{}.DouyinRelationFollowerList))
-	// 用户好友列表 所有关注登录用户的粉丝列表。
-	(*party).Handle("GET", "/relation/friend/list/", middleware.Handler(controller.ConnectController{}.DouyinRelationFriendList))
+	//// 用户好友列表 所有关注登录用户的粉丝列表。
+	//(*party).Handle("GET", "/relation/friend/list/", middleware.Handler(controller.ConnectController{}.DouyinRelationFriendList))
 }
 
 // RegisterConfigRouter 不需要鉴权

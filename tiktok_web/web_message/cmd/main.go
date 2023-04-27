@@ -1,10 +1,13 @@
 package main
 
 import (
+	"common/application"
+	"common/conf"
+	"common/initialize"
+	"common/log"
 	"flag"
 	"fmt"
 	"runtime"
-	"web_message/conf"
 	"web_message/internal/router"
 
 	"github.com/kataras/iris/v12"
@@ -12,6 +15,9 @@ import (
 
 func newApp() *iris.Application {
 	app := iris.New()
+	// 注册处理打印访问接口信息的中间件
+	application.PreSetting(app)
+
 	router.InitRouters(app)
 	return app
 }
@@ -28,18 +34,9 @@ func main() {
 
 	var err error
 
-	if err = conf.InitConfig(strPath); err != nil {
-		conf.Logger.Infof(err.Error(), "main:初始化配置文件失败")
-		panic(err)
-	}
-	if err = conf.InitLogger(&conf.Cfg.Log); err != nil {
-		conf.Logger.Infof(err.Error(), "main:初始化日志失败")
-		panic(err)
-	}
-	if conf.Mqcli, err = conf.InitMq(&conf.Cfg.MysqlConf); err != nil {
-		conf.Logger.Infof(err.Error(), "main:初始化数据库失败")
-		panic(err)
-	}
+	initialize.InitConfig(strPath)
+	log.InitLogger(&conf.Cfg.Log)
+	initialize.InitMq(&conf.Cfg.MysqlConf)
 
 	app := newApp()
 	addr := fmt.Sprintf("%s:%s", conf.Cfg.HttpAddr.Host, conf.Cfg.HttpAddr.Port)
@@ -49,8 +46,9 @@ func main() {
 		iris.WithRemoteAddrHeader("X-Forwarded-For"),
 		// 允许多次消费Body
 		iris.WithoutBodyConsumptionOnUnmarshal)
+
 	if err != nil {
-		conf.Logger.Infof(err.Error(), "main:iris启动失败")
+		log.Logger.Infof(err.Error(), "main:iris启动失败")
 		panic(err)
 	}
 }

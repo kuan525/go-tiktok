@@ -22,7 +22,7 @@ type DouyinRelationActionResp struct {
 type DouyinRelationFollowListResp struct {
 	StatusCode int32  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
-	UserList   User   `json:"user_list"`   // 用户信息列表
+	UserList   []User `json:"user_list"`   // 用户信息列表
 }
 
 type DouyinRelationFollowerListResp struct {
@@ -31,7 +31,7 @@ type DouyinRelationFollowerListResp struct {
 	UserList   User   `json:"user_list"`   // 用户信息列表
 }
 
-type FriendUser struct {
-	Message string `json:"message"`  // 和该好友的最新聊天消息
-	MsgType int64  `json:"msg_type"` // message消息的类型，0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
-}
+//type FriendUser struct {
+//	Message string `json:"message"`  // 和该好友的最新聊天消息
+//	MsgType int64  `json:"msg_type"` // message消息的类型，0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
+//}

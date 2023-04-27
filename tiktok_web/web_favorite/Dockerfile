@@ -6,7 +6,7 @@ COPY . web_favorite/
 
 # GOSUMDB:关闭和sum.golang.org的交互  CGO_ENABLED:禁用CGO
 # -trimpath 可以削减二进制文件的元数据路径  -ldflags "-w -s" 用于去除调试信息并缩小二进制文件的大小
-RUN cd /go/web_favorite/ && GOPROXY=https://goproxy.cn,direct GOSUMDB=off CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s" -o weweb_favoriteb_feed cmd/main.go
+RUN cd /go/web_favorite/ && GOPROXY=https://goproxy.cn,direct GOSUMDB=off CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s" -o web_favorite cmd/main.go
 
 FROM ubuntu:20.04
 

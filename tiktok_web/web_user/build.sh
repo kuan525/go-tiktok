@@ -14,7 +14,7 @@ NAME="localhost:5000/web_user"
 build_service() {
   echo "name: ${1}"
 
-  cd /Users/kuan525/Desktop/go-tiktok/tiktok_web/web_user
+  cd /Users/kuan525/Desktop/go-tiktok/tiktok_web/${1}
 
   echo "go mod vendor.........."
   go mod vendor
@@ -34,8 +34,8 @@ build_service() {
   # shellcheck disable=SC1009
   ssh kuan \
   "cd /tmp && \
-   docker stop web_user && \
-   docker rm web_user && \
+   docker stop ${1} && \
+   docker rm ${1} && \
    docker rmi ${NAME}:${TAG} && \
    docker load -i ${1}.tar && \
    docker run -itd -p ${NUMBER}:${NUMBER} --name ${1} ${NAME}:${TAG}"

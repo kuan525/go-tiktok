@@ -2,13 +2,13 @@ FROM golang:1.19 as builder
 
 # Local
 # 先执行go mod vendor，否则找不到外层的依赖
-COPY . /Users/kuan525/Desktop/go-tiktok/tiktok_web/web_relation
+COPY . web_relation/
 
 # GOSUMDB:关闭和sum.golang.org的交互  CGO_ENABLED:禁用CGO
 # -trimpath 可以削减二进制文件的元数据路径  -ldflags "-w -s" 用于去除调试信息并缩小二进制文件的大小
-RUN cd /Users/kuan525/Desktop/go-tiktok/tiktok_web/web_relation && GOPROXY=https://goproxy.cn,direct GOSUMDB=off CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s" -o web_relation cmd/main.go
+RUN cd /go/web_relation/ && GOPROXY=https://goproxy.cn,direct GOSUMDB=off CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-w -s" -o web_relation cmd/main.go
 
-FROM alpine
+FROM ubuntu:20.04
 
 # 指定作者
 LABEL maintainer="kuan525 <kuan_525@163.con>"
@@ -21,13 +21,15 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo 'Asia/Shanghai' >/etc/timezone \
-    && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
-    && apk add tzdata
+    && sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y tzdata
 
 WORKDIR /workspace
 
 # 指定源Docker映像
-COPY --from=builder /go/go-tiktok/go-tiktok /workspace
+COPY --from=builder /go/web_relation/web_relation /workspace
+COPY --from=builder /go/web_relation/conf/configs.yaml /workspace
 
 ENTRYPOINT ["./web_relation"]
 

@@ -8,8 +8,8 @@ set -e
 
 REMOTE_HOST="124.223.70.243"
 TAG=1.0.0.0
-NUMBER=6006
-NAME="localhost:5000/web_favorite"
+NUMBER=6007
+NAME="localhost:5000/web_comment"
 
 build_service() {
   echo "name: ${1}"

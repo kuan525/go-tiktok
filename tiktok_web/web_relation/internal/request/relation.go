@@ -16,7 +16,7 @@ type DouyinRelationFollowerListReq struct {
 	Token  string `json:"token"`   // 用户鉴权token
 }
 
-type DouyinRelationFriendListReq struct {
-	UserId int64  `json:"user_id"` // 用户id
-	Token  string `json:"token"`   // 用户鉴权token
-}
+//type DouyinRelationFriendListReq struct {
+//	UserId int64  `json:"user_id"` // 用户id
+//	Token  string `json:"token"`   // 用户鉴权token
+//}
