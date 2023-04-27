@@ -13,7 +13,10 @@ type Dao struct {
 var (
 	userTable     models.User
 	videoTable    models.Video
-	FavoriteTable models.Favorite
+	favoriteTable models.Favorite
+	relationTable models.Relation
+	commonTable   models.Comment
+	messageTable  models.Message
 )
 
 // Register 注册用户
@@ -74,14 +77,4 @@ func (a *Dao) GetUserByUserId(userId int64) (*models.User, bool) {
 		return &models.User{}, false
 	}
 	return &user, true
-}
-
-// GetNumUserAllToFavorite 获取当前用户的所有点赞数量
-func (a *Dao) GetNumUserAllToFavorite(userId int64) int64 {
-
-}
-
-// GetNumUserAllGetFavorite 获取当前用户的所有获赞数量
-func (a *Dao) GetNumUserAllGetFavorite(userId int64) int64 {
-
 }

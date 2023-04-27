@@ -31,26 +31,26 @@ func (a *Dao) GetVideos(LastestTime int64) ([]models.Video, int64, error) {
 }
 
 // IsFavorite true-已点赞，false-未点赞
-func (a *Dao) IsFavorite(userId int64, video int64) bool {
-
+func (a *Dao) IsFavorite(userId int64, videoId int64) bool {
+	ok, err := conf.Mqcli.Table(favoriteTable.TableName()).Where("user_id = ? AND video_id = ?", userId, videoId).Exist()
+	if err != nil {
+		return false
+	}
+	return ok
 }
 
 // IsFollow true-已关注，false-未关注
 func (a *Dao) IsFollow(Author, Readers int64) bool {
-
-}
-
-// GetNumFavorite 获取获赞数量
-func (a *Dao) GetNumFavorite(voide int64) int64 {
-
-}
-
-// GetNumComment 获取评论数量
-func (a *Dao) GetNumComment(voide int64) int64 {
-
+	ok, err := conf.Mqcli.Table(relationTable.TableName()).Where("user_id = ? AND be_followed = ?", Readers, Author).Exist()
+	if err != nil {
+		return false
+	}
+	return ok
 }
 
 // GetUserIdByVideoId 通过VideoId获取UserId
 func (a *Dao) GetUserIdByVideoId(videoId int64) (int64, error) {
-
+	var resp models.Video
+	_, err := conf.Mqcli.Table(videoTable.TableName()).Where("video_id = ?", videoId).Get(&resp)
+	return resp.UserId, err
 }
